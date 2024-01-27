@@ -89,7 +89,7 @@ const App = () => {
       }, 5000);
     } catch (error) {
       let msg = "Error: failed to add blog";
-      if (error.resposne) {
+      if (error.response) {
         msg = error.response.data.error;
       }
       setErrorMessage(msg);
