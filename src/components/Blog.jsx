@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const Blog = ({ blog, incrementLikeOf }) => {
+const Blog = ({ blog, incrementLikeOf, deleteBlogWithId }) => {
   const [visible, setVisible] = useState(false);
 
   const toggleVis = () => {
@@ -19,20 +19,27 @@ const Blog = ({ blog, incrementLikeOf }) => {
     incrementLikeOf(blog.id);
   };
 
+  const deleteBlog = () => {
+    deleteBlogWithId(blog.id);
+  };
+
   const showWhenVisible = { display: visible ? "" : "none" };
 
   const buttonText = visible ? "hide" : "show";
 
   return (
     <div style={blogStyle}>
-      {blog.title} {blog.author}
+      {blog.title} {blog.author}{" "}
       <button onClick={toggleVis}>{buttonText}</button>
       <div style={showWhenVisible}>
-        {blog.url}
+        <div>{blog.url}</div>
         <div>
           likes {blog.likes} <button onClick={incrementLike}>like</button>
         </div>
-        {blog.user.username}
+        <div>{blog.user.username}</div>
+        <div>
+          <button onClick={deleteBlog}>remove</button>
+        </div>
       </div>
     </div>
   );

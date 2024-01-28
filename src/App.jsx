@@ -119,6 +119,24 @@ const App = () => {
     }
   };
 
+  const deleteBlogWithId = async (blogId) => {
+    try {
+      await blogService.remove(blogId);
+      const filteredBlogs = blogs.filter((blog) => blog.id !== blogId);
+      setBlogs(filteredBlogs);
+    } catch (error) {
+      let msg = "Error: failed to remove blog";
+      if (error.response) {
+        msg = error.response.data.error;
+      }
+      setErrorMessage(msg);
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+      console.error(error);
+    }
+  };
+
   const blogsToShow = blogs.sort((a, b) => b.likes - a.likes);
 
   return (
@@ -148,7 +166,12 @@ const App = () => {
             <BlogForm createBlog={addBlog} />
           </Toggleable>
           {blogsToShow.map((blog) => (
-            <Blog key={blog.id} blog={blog} incrementLikeOf={incrementLikeOf} />
+            <Blog
+              key={blog.id}
+              blog={blog}
+              incrementLikeOf={incrementLikeOf}
+              deleteBlogWithId={deleteBlogWithId}
+            />
           ))}
         </div>
       )}
