@@ -124,6 +124,11 @@ const App = () => {
       await blogService.remove(blogId);
       const filteredBlogs = blogs.filter((blog) => blog.id !== blogId);
       setBlogs(filteredBlogs);
+      setSuccessMessage("Successfully removed blog");
+      setTimeout(() => {
+        setSuccessMessage(null);
+        console.log(blog);
+      }, 5000);
     } catch (error) {
       let msg = "Error: failed to remove blog";
       if (error.response) {

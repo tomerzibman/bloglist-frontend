@@ -20,7 +20,9 @@ const Blog = ({ blog, incrementLikeOf, deleteBlogWithId }) => {
   };
 
   const deleteBlog = () => {
-    deleteBlogWithId(blog.id);
+    if (window.confirm(`Remove blog "${blog.title}" by ${blog.author}?`)) {
+      deleteBlogWithId(blog.id);
+    }
   };
 
   const showWhenVisible = { display: visible ? "" : "none" };
