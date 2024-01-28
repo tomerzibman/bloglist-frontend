@@ -1,20 +1,18 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from 'react';
 
-import Blog from "./components/Blog";
-import LoginForm from "./components/LoginForm";
-import Toggleable from "./components/Toggleable";
+import Blog from './components/Blog';
+import LoginForm from './components/LoginForm';
+import Toggleable from './components/Toggleable';
 
-import blogService from "./services/blogs";
-import loginService from "./services/login";
-import LogoutButton from "./components/LogoutButton";
-import BlogForm from "./components/BlogForm";
-import ErrorNotification from "./components/ErrorNotification";
-import SuccessNotification from "./components/SuccessNotification";
+import blogService from './services/blogs';
+import loginService from './services/login';
+import LogoutButton from './components/LogoutButton';
+import BlogForm from './components/BlogForm';
+import ErrorNotification from './components/ErrorNotification';
+import SuccessNotification from './components/SuccessNotification';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
@@ -28,7 +26,7 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    const loggedInJSON = window.localStorage.getItem("loggedInJSON");
+    const loggedInJSON = window.localStorage.getItem('loggedInJSON');
     if (loggedInJSON) {
       const user = JSON.parse(loggedInJSON);
       setUser(user);
@@ -36,19 +34,18 @@ const App = () => {
     }
   }, []);
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
+  const handleLogin = async (credentials) => {
     try {
-      const user = await loginService.login({ username, password });
+      const user = await loginService.login(credentials);
       setUser(user);
       blogService.setToken(user.token);
-      window.localStorage.setItem("loggedInJSON", JSON.stringify(user));
+      window.localStorage.setItem('loggedInJSON', JSON.stringify(user));
       setSuccessMessage(`Successfully logged in as ${user.username}`);
       setTimeout(() => {
         setSuccessMessage(null);
       }, 5000);
     } catch (exception) {
-      let msg = "Error: login failed";
+      let msg = 'Error: login failed';
       if (exception.response) {
         msg = exception.response.data.error;
       }
@@ -61,9 +58,9 @@ const App = () => {
   };
 
   const handleLogout = () => {
-    window.localStorage.removeItem("loggedInJSON");
+    window.localStorage.removeItem('loggedInJSON');
     setUser(null);
-    setSuccessMessage("Successfully logged out");
+    setSuccessMessage('Successfully logged out');
     setTimeout(() => {
       setSuccessMessage(null);
     }, 5000);
@@ -76,22 +73,22 @@ const App = () => {
         {
           likes: blogToUpdate.likes + 1,
         },
-        blogToUpdate.id
+        blogToUpdate.id,
       );
       const updatedBlogs = blogs.map((blog) =>
-        blog.id === blogId ? updatedBlog : blog
+        blog.id === blogId ? updatedBlog : blog,
       );
       setBlogs(updatedBlogs);
     } catch (error) {
-      let msg = "Error: liking blog failed";
-      if (exception.response) {
-        msg = exception.response.data.error;
+      let msg = 'Error: liking blog failed';
+      if (error.response) {
+        msg = error.response.data.error;
       }
       setErrorMessage(msg);
       setTimeout(() => {
         setErrorMessage(null);
       }, 5000);
-      console.log(exception);
+      console.log(error);
     }
   };
 
@@ -107,7 +104,7 @@ const App = () => {
         console.log(blog);
       }, 5000);
     } catch (error) {
-      let msg = "Error: failed to add blog";
+      let msg = 'Error: failed to add blog';
       if (error.response) {
         msg = error.response.data.error;
       }
@@ -124,13 +121,12 @@ const App = () => {
       await blogService.remove(blogId);
       const filteredBlogs = blogs.filter((blog) => blog.id !== blogId);
       setBlogs(filteredBlogs);
-      setSuccessMessage("Successfully removed blog");
+      setSuccessMessage('Successfully removed blog');
       setTimeout(() => {
         setSuccessMessage(null);
-        console.log(blog);
       }, 5000);
     } catch (error) {
-      let msg = "Error: failed to remove blog";
+      let msg = 'Error: failed to remove blog';
       if (error.response) {
         msg = error.response.data.error;
       }
@@ -151,20 +147,14 @@ const App = () => {
       {!isLoggedIn && (
         <div>
           <h2>log in to application</h2>
-          <LoginForm
-            username={username}
-            password={password}
-            setUsername={setUsername}
-            setPassword={setPassword}
-            handleLogin={handleLogin}
-          />
+          <LoginForm handleLogin={handleLogin} />
         </div>
       )}
       {isLoggedIn && (
         <div>
           <h2>blogs</h2>
           <p>
-            {user.name} is logged in{" "}
+            {user.name} is logged in{' '}
             <LogoutButton handleLogout={handleLogout} />
           </p>
           <Toggleable ref={blogFormRef} buttonLabel="new blog">
