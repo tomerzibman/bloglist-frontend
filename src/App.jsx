@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import Blog from "./components/Blog";
 import LoginForm from "./components/LoginForm";
+import Toggleable from "./components/Toggleable";
 
 import blogService from "./services/blogs";
 import loginService from "./services/login";
@@ -15,11 +16,10 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+
+  const blogFormRef = useRef();
 
   const isLoggedIn = user !== null;
 
@@ -69,23 +69,42 @@ const App = () => {
     }, 5000);
   };
 
-  const addBlog = async (event) => {
-    event.preventDefault();
-    const blogObject = {
-      title,
-      author,
-      url,
-    };
+  const incrementLikeOf = async (blogId) => {
+    const blogToUpdate = blogs.find((blog) => blog.id === blogId);
     try {
+      const updatedBlog = await blogService.update(
+        {
+          likes: blogToUpdate.likes + 1,
+        },
+        blogToUpdate.id
+      );
+      const updatedBlogs = blogs.map((blog) =>
+        blog.id === blogId ? updatedBlog : blog
+      );
+      setBlogs(updatedBlogs);
+    } catch (error) {
+      let msg = "Error: liking blog failed";
+      if (exception.response) {
+        msg = exception.response.data.error;
+      }
+      setErrorMessage(msg);
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+      console.log(exception);
+    }
+  };
+
+  const addBlog = async (blogObject) => {
+    try {
+      blogFormRef.current.toggleVisibility();
       const blog = await blogService.create(blogObject);
       const newBlogs = blogs.concat(blog);
       setBlogs(newBlogs);
-      setTitle("");
-      setAuthor("");
-      setUrl("");
       setSuccessMessage(`Successfully added ${blog.title} by ${blog.author}`);
       setTimeout(() => {
         setSuccessMessage(null);
+        console.log(blog);
       }, 5000);
     } catch (error) {
       let msg = "Error: failed to add blog";
@@ -99,6 +118,31 @@ const App = () => {
       console.error(error);
     }
   };
+
+  const deleteBlogWithId = async (blogId) => {
+    try {
+      await blogService.remove(blogId);
+      const filteredBlogs = blogs.filter((blog) => blog.id !== blogId);
+      setBlogs(filteredBlogs);
+      setSuccessMessage("Successfully removed blog");
+      setTimeout(() => {
+        setSuccessMessage(null);
+        console.log(blog);
+      }, 5000);
+    } catch (error) {
+      let msg = "Error: failed to remove blog";
+      if (error.response) {
+        msg = error.response.data.error;
+      }
+      setErrorMessage(msg);
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+      console.error(error);
+    }
+  };
+
+  const blogsToShow = blogs.sort((a, b) => b.likes - a.likes);
 
   return (
     <div>
@@ -123,17 +167,16 @@ const App = () => {
             {user.name} is logged in{" "}
             <LogoutButton handleLogout={handleLogout} />
           </p>
-          <BlogForm
-            title={title}
-            setTitle={setTitle}
-            author={author}
-            setAuthor={setAuthor}
-            url={url}
-            setUrl={setUrl}
-            addBlog={addBlog}
-          />
-          {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} />
+          <Toggleable ref={blogFormRef} buttonLabel="new blog">
+            <BlogForm createBlog={addBlog} />
+          </Toggleable>
+          {blogsToShow.map((blog) => (
+            <Blog
+              key={blog.id}
+              blog={blog}
+              incrementLikeOf={incrementLikeOf}
+              deleteBlogWithId={deleteBlogWithId}
+            />
           ))}
         </div>
       )}
