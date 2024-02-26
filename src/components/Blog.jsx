@@ -30,10 +30,10 @@ const Blog = ({ blog, incrementLikeOf, deleteBlogWithId }) => {
   const buttonText = visible ? 'hide' : 'show';
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className="blog">
       {blog.title} {blog.author}{' '}
       <button onClick={toggleVis}>{buttonText}</button>
-      <div style={showWhenVisible}>
+      <div style={showWhenVisible} className="details">
         <div>{blog.url}</div>
         <div>
           likes {blog.likes} <button onClick={incrementLike}>like</button>
