@@ -36,7 +36,8 @@ const Blog = ({ blog, incrementLikeOf, deleteBlogWithId }) => {
       <div style={showWhenVisible} className="details">
         <div>{blog.url}</div>
         <div>
-          likes {blog.likes} <button onClick={incrementLike}>like</button>
+          likes <span className="likes">{blog.likes}</span>{' '}
+          <button onClick={incrementLike}>like</button>
         </div>
         <div>{blog.user.username}</div>
         <div>
