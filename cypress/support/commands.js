@@ -11,7 +11,7 @@
 //
 // -- This is a parent command --
 Cypress.Commands.add('login', (username, password) => {
-  cy.request('POST', 'http://localhost:3003:/api/login', {
+  cy.request('POST', `${Cypress.env('BACKEND')}/login`, {
     username,
     password,
   }).then(({ body }) => {
@@ -33,7 +33,7 @@ Cypress.Commands.add('login', (username, password) => {
 
 Cypress.Commands.add('createBlog', (title, author, url, likes = 0) => {
   cy.request({
-    url: 'http://localhost:3003/api/blogs',
+    url: `${Cypress.env('BACKEND')}/blogs`,
     method: 'POST',
     body: {
       title,

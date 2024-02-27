@@ -1,7 +1,7 @@
 describe('Blog app', function () {
   beforeEach(function () {
-    cy.request('POST', 'http://localhost:3003/api/testing/reset');
-    cy.request('POST', 'http://localhost:3003/api/users', {
+    cy.request('POST', `${Cypress.env('BACKEND')}/testing/reset`);
+    cy.request('POST', `${Cypress.env('BACKEND')}/users`, {
       username: 'tomerzibman',
       password: 'testing',
       name: 'Tomer Zibman',
